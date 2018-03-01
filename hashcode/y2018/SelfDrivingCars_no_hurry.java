@@ -125,8 +125,9 @@ public class SelfDrivingCars_no_hurry {
 		d[0][0] = 0;
 		for (int i = 0; i < rides; i++) {
 			int a = order.get(i);
-			int len = length[a] + Math.abs(xFrom[a]) + Math.abs(yFrom[a]);
+			int len = length[a];
 			int win = len;
+			len += Math.abs(xFrom[a]) + Math.abs(yFrom[a]);
 			int j = i + 1;
 			while (j < rides) {
 				a = order.get(j - 1);
@@ -140,7 +141,6 @@ public class SelfDrivingCars_no_hurry {
 				}
 				break;
 			}
-			System.out.println(i + " " + j + " " + win);
 			for (int k = 0; k <= fleet; k++) {
 				if (d[i][k] == -1) {
 					continue;
