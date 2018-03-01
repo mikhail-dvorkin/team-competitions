@@ -1,4 +1,4 @@
-package hashcode.y2018;
+package hashcode.y2018.qual;
 import java.io.*;
 import java.util.*;
 
