@@ -5,7 +5,7 @@ import java.util.*;
 public class SelfDrivingCars_no_hurry {
 	int hei, wid, fleet, rides, bonus, interval;
 	int[] xFrom, yFrom, xTo, yTo, start, end, length;
-	static final int CONNECTION_THRESHOLD = 150;
+	static final int CONNECTION_THRESHOLD = 500;
 	
 	public void run() {
 		hei = in.nextInt();
