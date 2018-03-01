@@ -5,7 +5,7 @@ import java.util.*;
 public class SelfDrivingCars_no_hurry {
 	int hei, wid, fleet, rides, bonus, interval;
 	int[] xFrom, yFrom, xTo, yTo, start, end, length;
-	static final int CONNECTION_THRESHOLD = 500;
+	static final int CONNECTION_THRESHOLD = 1024;
 	
 	public void run() {
 		hei = in.nextInt();
@@ -34,30 +34,16 @@ public class SelfDrivingCars_no_hurry {
 			desiredTravel += length[i];
 		}
 		System.out.println("Desired travel: \t" + desiredTravel);
-		
-		/*
-		ArrayList<Integer>[][] startsHere = new ArrayList[hei][wid];
-		ArrayList<Integer>[][] endsHere = new ArrayList[hei][wid];
-		for (int i = 0; i < hei; i++) {
-			for (int j = 0; j < wid; j++) {
-				startsHere[i][j] = new ArrayList<>();
-				endsHere[i][j] = new ArrayList<>();
-			}
-		}
-		for (int i = 0; i < rides; i++) {
-			startsHere[xFrom[i]][yFrom[i]].add(i);
-			endsHere[xTo[i]][yTo[i]].add(i);
-		}
-		*/
+
 		int[] left = new int[rides];
+		@SuppressWarnings("unchecked")
 		ArrayList<Integer>[] chain = new ArrayList[rides];
-		int[] chainLength = new int[rides];
 		for (int i = 0; i < rides; i++) {
 			left[i] = i;
 			chain[i] = new ArrayList<>();
 			chain[i].add(i);
-			chainLength[i] = length[i];
 		}
+
 		boolean[] isBorder = new boolean[rides];
 		for (int mode = 0; mode < 2; mode++) {
 			ArrayList<Connection> connections = new ArrayList<>();
@@ -77,7 +63,7 @@ public class SelfDrivingCars_no_hurry {
 					connections.add(connection);
 				}
 			}
-			System.out.println("Mode " + mode + ". " + connections.size() + " connections");
+			System.out.println("Mode " + mode + ": " + connections.size() + " connections");
 			Collections.sort(connections);
 			for (Connection connection : connections) {
 				int a = connection.a;
@@ -93,7 +79,6 @@ public class SelfDrivingCars_no_hurry {
 					left[c] = la;
 				}
 				chain[la].addAll(chain[b]);
-				chainLength[la] += chainLength[b] + connection.connDist;
 			}
 			if (mode == 0) {
 				for (int i = 0; i < rides; i++) {
@@ -104,19 +89,20 @@ public class SelfDrivingCars_no_hurry {
 					isBorder[chain[i].get(chain[i].size() - 1)] = true;
 				}
 			}
-			System.out.println("Mode done.");
+			System.out.println("Mode " + mode + " done.");
 		}
+
 		ArrayList<Integer> order = null;
 		for (int i = 0; i < rides; i++) {
 			if (left[i] != i) {
 				continue;
 			}
-			System.out.println(i + " " + chain[i].size() + " " + chainLength[i]);
 			order = chain[i];
 		}
 		if (order.size() != rides) {
 			throw new AssertionError();
 		}
+
 		int[][] d = new int[rides + 1][fleet + 1];
 		int[][] how = new int[rides + 1][fleet + 1];
 		for (int i = 0; i < d.length; i++) {
@@ -155,22 +141,72 @@ public class SelfDrivingCars_no_hurry {
 				}
 			}
 		}
-		System.out.println("Ans: " + d[rides][fleet]);
-		int k = fleet;
-		int i = rides;
-		while (k > 0) {
-			int j = how[i][k];
-			if (j == -1) {
-				i--;
-				continue;
+		int ans = d[rides][fleet];
+		System.out.println("Unimproved answer: " + ans);
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer>[] paths = new ArrayList[fleet];
+		{
+			int k = fleet;
+			int i = rides;
+			while (k > 0) {
+				int j = how[i][k];
+				if (j == -1) {
+					i--;
+					continue;
+				}
+				paths[k - 1] = new ArrayList<>();
+				for (int t = j; t < i; t++) {
+					int a = order.get(t);
+					paths[k - 1].add(a);
+				}
+				i = j;
+				k--;
 			}
-			out.print(i - j);
-			for (int t = j; t < i; t++) {
-				out.print(" " + order.get(t));
+		}
+
+		int[] time = new int[fleet];
+		int[] xLast = new int[fleet];
+		int[] yLast = new int[fleet];
+		boolean[] taken = new boolean[rides];
+		for (int i = 0; i < fleet; i++) {
+			for (int a : paths[i]) {
+				taken[a] = true;
+				time[i] += Math.abs(xLast[i] - xFrom[a]) + Math.abs(yLast[i] - yFrom[a]);
+				xLast[i] = xTo[a];
+				yLast[i] = yTo[a];
+				time[i] += length[a];
+			}
+		}
+		for (int m = hei + wid; m > 0; m--) {
+			for (int i = 0; i < rides; i++) {
+				if (taken[i] || length[i] < m) {
+					continue;
+				}
+				for (int j = 0; j < fleet; j++) {
+					int t = time[j];
+					t += Math.abs(xLast[j] - xFrom[i]) + Math.abs(yLast[j] - yFrom[i]);
+					t += length[i];
+					if (t <= interval) {
+						time[j] = t;
+						xLast[j] = xTo[i];
+						yLast[j] = yTo[i];
+						paths[j].add(i);
+						taken[i] = true;
+						ans += length[i];
+						break;
+					}
+				}
+			}
+		}
+		System.out.println("Answer: " + ans);
+
+		for (int i = 0; i < fleet; i++) {
+			out.print(paths[i].size());
+			for (int v : paths[i]) {
+				out.print(" " + v);
 			}
 			out.println();
-			i = j;
-			k--;
 		}
 	}
 	
@@ -182,7 +218,7 @@ public class SelfDrivingCars_no_hurry {
 			this.a = a;
 			this.b = b;
 			connDist = Math.abs(xFrom[b] - xTo[a]) + Math.abs(yFrom[b] - yTo[a]);
-			penalty = connDist * 1.0 / Math.min(length[a], length[b]);
+			penalty = connDist * 1.0 / (length[a] + length[b]);
 		}
 
 		@Override
