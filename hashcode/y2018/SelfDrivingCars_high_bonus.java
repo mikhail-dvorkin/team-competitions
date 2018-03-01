@@ -5,6 +5,7 @@ import java.util.*;
 public class SelfDrivingCars_high_bonus {
 	int hei, wid, fleet, rides, bonus, interval;
 	int[] xFrom, yFrom, xTo, yTo, start, end, length;
+	static final double PENALTY_THRESHOLD = 13.56;
 	
 	public void run() {
 		hei = in.nextInt();
@@ -35,6 +36,7 @@ public class SelfDrivingCars_high_bonus {
 		System.out.println("Desired travel: \t" + desiredTravel);
 		
 		int[] left = new int[rides];
+		@SuppressWarnings("unchecked")
 		ArrayList<Integer>[] chain = new ArrayList[rides];
 		for (int i = 0; i < rides; i++) {
 			left[i] = i;
@@ -53,7 +55,7 @@ public class SelfDrivingCars_high_bonus {
 					if (connection.dead) {
 						continue;
 					}
-					if (connection.penalty > 13.56) {
+					if (connection.penalty > PENALTY_THRESHOLD) {
 						continue;
 					}
 					connections.add(connection);
@@ -130,7 +132,6 @@ public class SelfDrivingCars_high_bonus {
 
 	public static void main(String[] args) throws IOException {
 		String fileName = "e_high_bonus";
-//		String fileName = "c_no_hurry";
 		String inputFileName = fileName + ".in";
 		String outputFileName = fileName + ".out";
 
