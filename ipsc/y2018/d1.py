@@ -96,7 +96,7 @@ def decreasings(x='x', y='y'):
 	assert x != y
 	r(f'{y} = {x} << 1 ; {y} &= {x} ; ~ {y} ; {y} ^= {x} ; ~ {y} ; {y} &= {all_ones() - 1}')
 
-def spread_1_right(x='x', y='y'):
+def spread_right(x='x', y='y'):
 	assert x != 'p' != y
 	r(f'p = {x} >> 1 ; {y} = {x} | p')
 	i = 2
@@ -116,7 +116,7 @@ def count_ones(x='x', y='y', add=0):
 
 def decreasing_prefix(x='x', y='y'):
 	assert x != y
-	r(f'{y} = decreasings {x} ; {y} |= 1 ; {y} = spread_1_right {y} ; {y} = {all_ones()} - {y} ; count_ones {y} {y} 1')
+	r(f'{y} = decreasings {x} ; {y} |= 1 ; {y} = spread_right {y} ; {y} = {all_ones()} - {y} ; count_ones {y} {y} 1')
 
 def test():
 	global _debug, _mode
@@ -135,10 +135,10 @@ def test():
 	assert run(decreasings, int('10', 3)) == int('10', 3)
 	assert run(decreasings, int('0', 3)) == int('0', 3)
 	assert run(decreasings, int('1', 3)) == int('0', 3)
-	assert run(spread_1_right, int('1', 3)) == int('1', 3)
-	assert run(spread_1_right, int('100010', 3)) == int('111111', 3)
-	assert run(spread_1_right, int('1' + '0' * 39, 3)) == int('1' * 40, 3)
-	assert run(spread_1_right, int('0', 3)) == int('0', 3)
+	assert run(spread_right, int('1', 3)) == int('1', 3)
+	assert run(spread_right, int('100010', 3)) == int('111111', 3)
+	assert run(spread_right, int('1' + '0' * 39, 3)) == int('1' * 40, 3)
+	assert run(spread_right, int('0', 3)) == int('0', 3)
 	assert run(count_ones, int('101' * 13, 3)) == 26
 	assert run(decreasing_prefix, int('1' + '0' * 39, 3)) == 1
 	assert run(decreasing_prefix, int('12' + '0' * 38, 3)) == 2
