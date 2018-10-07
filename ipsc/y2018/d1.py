@@ -41,6 +41,9 @@ def r(commands):
 		if s[0] in OPS:
 			command = s[1] + ' = ' + s[0] + ' ' + s[1]
 			s = command.split()
+		if len(s[0]) != 1:
+			eval(s[0])(*s[1:])
+			continue
 		if s[1] != '=':
 			command = s[0] + ' = ' + s[0] + ' ' + s[1][:-1] + ' ' + s[2]
 			s = command.split()
@@ -108,11 +111,7 @@ def count_ones(x='x', y='y', add=0):
 
 def decreasing_prefix(x='x', y='y'):
 	assert x != y
-	decreasings(x, y)
-	r(f'{y} |= 1')
-	spread_1_right(y, y)
-	r(f'{y} = {all_ones()} - {y}')
-	count_ones(y, y, add=1)
+	r(f'decreasings {x} {y} ; {y} |= 1 ; spread_1_right {y} {y} ; {y} = {all_ones()} - {y} ; count_ones {y} {y} 1')
 
 def test():
 	global _debug, _mode
