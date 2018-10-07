@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+import inspect
+import sys
 
 TRITS = 40
 MODULO = 3 ** TRITS
@@ -41,8 +43,11 @@ def r(commands):
 		if s[0] in OPS:
 			command = s[1] + ' = ' + s[0] + ' ' + s[1]
 			s = command.split()
-		if len(s[0]) != 1:
+		if s[0] in _fset:
 			eval(s[0])(*s[1:])
+			continue
+		if s[2] in _fset:
+			eval(s[2])(*s[3:], s[0])
 			continue
 		if s[1] != '=':
 			command = s[0] + ' = ' + s[0] + ' ' + s[1][:-1] + ' ' + s[2]
@@ -111,7 +116,7 @@ def count_ones(x='x', y='y', add=0):
 
 def decreasing_prefix(x='x', y='y'):
 	assert x != y
-	r(f'decreasings {x} {y} ; {y} |= 1 ; spread_1_right {y} {y} ; {y} = {all_ones()} - {y} ; count_ones {y} {y} 1')
+	r(f'{y} = decreasings {x} ; {y} |= 1 ; {y} = spread_1_right {y} ; {y} = {all_ones()} - {y} ; count_ones {y} {y} 1')
 
 def test():
 	global _debug, _mode
@@ -140,6 +145,8 @@ def test():
 	assert run(decreasing_prefix, int('1', 3)) == TRITS
 	assert run(decreasing_prefix, int('0', 3)) == TRITS
 	assert run(decreasing_prefix, int('1112222001202120', 3)) == TRITS - 9
+
+_fset = set([name for name, obj in inspect.getmembers(sys.modules[__name__]) if inspect.isfunction(obj) and len(name) > 1])
 
 test()
 _mode = print
