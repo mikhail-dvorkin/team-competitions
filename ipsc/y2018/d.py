@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import inspect
+import random
 import sys
 
 TRITS = 40
@@ -72,7 +73,7 @@ def r(commands):
 		value = OPS[op](*vs)
 		DIR[var0] = value
 		if _debug:
-			print(str3(value), '=', *map(str3, vs), '|', command.upper())
+			print(str3(value), '=', *map(str3, vs), command.upper())
 
 def run(program, value, x='x', y='y'):
 	if _mode == print:
@@ -118,7 +119,67 @@ def decreasing_prefix(x='x', y='y'):
 	assert x != y
 	r(f'{y} = decreasings {x} ; {y} |= 1 ; {y} = spread_right {y} ; {y} = {all_ones()} - {y} ; count_ones {y} {y} 1')
 
-def test():
+def signum_deprecated(x='x', y='y'):
+	r(f'{y} = spread_right {x} ; {y} &= 1')
+
+def signum(x='x', y='y'):
+	r(f'{y} = {x} & {all_ones()} ; {y} += 1 ; {y} = 1 % {y}')
+
+def is_zero(x='x', y='y'):
+	r(f'{y} = signum {x} ; {y} = 1 - {y}')
+
+def eq(x='x', v=1, y='y'):
+	r(f'{y} = {x} - {v} ; {y} = is_zero {y}')
+
+def neq(x='x', v=1, y='y'):
+	r(f'{y} = {x} - {v} ; {y} = signum {y}')
+
+#v must be positive
+def at_least(x='x', v=2, y='y'):
+	assert x != y
+	r(f'{y} = {x} % {v} ; {y} -= {x} ; {y} = signum {y}')
+
+def divisible(x='x', v=4, y='y'):
+	r(f'{y} = {x} % {v} ; {y} = is_zero {y}')
+
+def power(x='x', exp=6, mod=100, maxx=1000000000, y='y'):
+	r(f'p = {x} % {mod} ; {y} = 1 ; q = {exp}')
+	for i in range(maxx.bit_length()):
+		if i:
+			r(f'p *= p ; p %= {mod} ; q /= 2')
+		r(f'r = q % 2 ; s = p - 1 ; r *= s ; r += 1 ; {y} *= r ; {y} %= {mod}')
+
+def is_prime(x='x', y='y', iters=10, maxx=1000000000):
+	r(f'n = {x} ; p = at_least n 5 ; p = 1 - p ; p *= 4 ; n += p')
+	r(f'd = n - 1')
+	for _ in range(maxx.bit_length()):
+		r(f'p = d % 2 ; p = 2 - p ; d /= p')
+	r(f'e = n - 3 ; p = is_zero e ; e += p ; {y} = 0')
+	random.seed(566)
+	for _ in range(iters):
+		a = random.randrange(0, MODULO)
+		r(f'a = {a} % e ; a += 2')
+		power('a', 'd', 'n', maxx, 'a')
+		r(f'd = n - 1')
+		r(f'p = neq a 1 ; b = p ; p = neq a d ; b &= p')
+		for _ in range(maxx.bit_length() - 2):
+			r(f'a *= a ; a %= n ; p = neq a d ; b &= p')
+		r(f'{y} |= b')
+	r(f'{y} = 1 - {y}')
+	
+	for p in [3, 5, 7]:
+		r(f'a = divisible {x} {p} ; b = at_least {x} {p + 1} ; a &= b ; a = 1 - a ; {y} *= a')
+	#Handle even x.
+	r(f'a = {x} % 2 ; {y} *= a')
+	#Handle x <= 3. a = [x >= 4]; y = a * y + (1 - a) * [x in 2, 3] 
+	r(f'a = at_least {x} 4 ; b = 1 - a ; c = {x} / 2 ; b *= c ; {y} *= a ; {y} += b')
+
+def test_many(program, ideal):
+	tested = list(range(32)) + list(range(MODULO - 16, MODULO))
+	for i in tested:
+		assert run(program, i) == ideal(i), (program, i)
+
+def test(thorough=False):
 	global _debug, _mode
 	_mode, _debug = exec, False
 	assert OPS['+'](10, 100) == 110
@@ -145,9 +206,23 @@ def test():
 	assert run(decreasing_prefix, int('1', 3)) == TRITS
 	assert run(decreasing_prefix, int('0', 3)) == TRITS
 	assert run(decreasing_prefix, int('1112222001202120', 3)) == TRITS - 9
+	test_many(signum, lambda x : 1 if x > 0 else 0)
+	test_many(is_zero, lambda x : 1 if x == 0 else 0)
+	test_many(eq, lambda x : 1 if x == 1 else 0)
+	test_many(neq, lambda x : 1 if x != 1 else 0)
+	test_many(at_least, lambda x : 1 if x >= 2 else 0)
+	test_many(divisible, lambda x : 1 if x % 4 == 0 else 0)
+	test_many(power, lambda x : x ** 6 % 100)
+	if thorough:
+		for i in list(range(100)) + list(range(10**9 - 100, 10**9 + 1)):
+			prime = all([i % j for j in range(2, int(i ** 0.5) + 1)]) and i > 1
+			assert run(is_prime, i) == int(prime)
+
 
 _fset = set([name for name, obj in inspect.getmembers(sys.modules[__name__]) if inspect.isfunction(obj) and len(name) > 1])
 
 test()
+#_mode, _debug = exec, True
 _mode = print
-decreasing_prefix()
+#decreasing_prefix() #D1
+is_prime() #D2
