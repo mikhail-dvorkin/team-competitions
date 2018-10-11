@@ -139,9 +139,6 @@ def at_least(x='x', v=2, y='y'):
 	assert x != y
 	r(f'{y} = {x} % {v} ; {y} -= {x} ; {y} = signum {y}')
 
-def divisible(x='x', v=4, y='y'):
-	r(f'{y} = {x} % {v} ; {y} = is_zero {y}')
-
 def power(x='x', exp=6, mod=100, maxx=1000000000, y='y'):
 	r(f'p = {x} % {mod} ; {y} = 1 ; q = {exp}')
 	for i in range(maxx.bit_length()):
@@ -156,8 +153,9 @@ def is_prime(x='x', y='y', iters=10, maxx=1000000000):
 		r(f'p = d % 2 ; p = 2 - p ; d /= p')
 	r(f'e = n - 3 ; p = is_zero e ; e += p ; {y} = 0')
 	random.seed(566)
-	for _ in range(iters):
-		a = random.randrange(0, MODULO)
+#	for _ in range(iters):
+#		a = random.randrange(0, MODULO)
+	for a in [2, 3, 5, 7]:
 		r(f'a = {a} % e ; a += 2')
 		power('a', 'd', 'n', maxx, 'a')
 		r(f'd = n - 1')
@@ -167,8 +165,6 @@ def is_prime(x='x', y='y', iters=10, maxx=1000000000):
 		r(f'{y} |= b')
 	r(f'{y} = 1 - {y}')
 	
-	for p in [3, 5, 7]:
-		r(f'a = divisible {x} {p} ; b = at_least {x} {p + 1} ; a &= b ; a = 1 - a ; {y} *= a')
 	#Handle even x.
 	r(f'a = {x} % 2 ; {y} *= a')
 	#Handle x <= 3. a = [x >= 4]; y = a * y + (1 - a) * [x in 2, 3] 
@@ -211,7 +207,6 @@ def test(thorough=False):
 	test_many(eq, lambda x : 1 if x == 1 else 0)
 	test_many(neq, lambda x : 1 if x != 1 else 0)
 	test_many(at_least, lambda x : 1 if x >= 2 else 0)
-	test_many(divisible, lambda x : 1 if x % 4 == 0 else 0)
 	test_many(power, lambda x : x ** 6 % 100)
 	if thorough:
 		for i in list(range(100)) + list(range(10**9 - 100, 10**9 + 1)):
