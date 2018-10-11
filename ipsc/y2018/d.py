@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import inspect
-import random
 import sys
 
 TRITS = 40
@@ -152,7 +151,7 @@ def is_prime(x='x', y='y', iters=10, maxx=1000000000):
 	for _ in range(maxx.bit_length()):
 		r(f'p = d % 2 ; p = 2 - p ; d /= p')
 	r(f'e = n - 3 ; p = is_zero e ; e += p ; {y} = 0')
-	random.seed(566)
+#	random.seed(566)
 #	for _ in range(iters):
 #		a = random.randrange(0, MODULO)
 	for a in [2, 3, 5, 7]:
