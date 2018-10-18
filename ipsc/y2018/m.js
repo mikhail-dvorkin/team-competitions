@@ -41,12 +41,8 @@ if (t == "I JUST WANT TO KNOW: IS var1 CORRECTLY NESTED? PLEASE ANSWER YES OR NO
 	b = "";
 	for (i = 0; i < v1.length; i++) {
 		ok = 1;
-		if (v1[i] == "(") {
-			b += "(";
-			continue;
-		}
-		if (v1[i] == "[") {
-			b += "[";
+		if (v1[i] == "(" || v1[i] == "[") {
+			b += v1[i];
 			continue;
 		}
 		if (b == "") {
@@ -63,10 +59,9 @@ if (t == "I JUST WANT TO KNOW: IS var1 CORRECTLY NESTED? PLEASE ANSWER YES OR NO
 	if (b != "") {
 		ok = 0;
 	}
-	if (ok == 1) {ans = "YES"} else {ans = "NO"}
+	if (ok == 1) {ans = "YES";} else {ans = "NO";}
 }
 if (t == "A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.\nBUT WHO WON? ANSWER X OR O OR NEITHER.\n\nvar1") {
-	console.log("XOXOXOXOXOXO");
 	b = v1.split("\n");
 	ans = "NEITHER";
 	s1 = b[0][0] + b[0][1] + b[0][2];
