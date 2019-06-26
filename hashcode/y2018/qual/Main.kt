@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
 
     val (_, _, V, R) = Array(4) { sc.nextInt() }
     B = sc.nextInt()
-    val T = sc.nextInt()
+    sc.nextInt()
 
     val rides = Array(R) { sc.nextRide(it) }
 
