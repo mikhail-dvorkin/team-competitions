@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import aimmaze
+from res import aimmaze
 
 def main():
 	aimmaze.CELL_SIZE = 4
