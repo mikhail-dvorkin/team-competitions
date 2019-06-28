@@ -1,0 +1,14 @@
+for-251
+	for-500
+		move-left
+	end
+	for-499
+		move-down
+	end
+	for-500
+		move-right
+	end
+	for-500
+		move-up
+	end
+end

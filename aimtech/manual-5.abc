@@ -1,0 +1,19 @@
+for-176
+	for-351
+		move-down
+		move-right
+		move-up
+		move-right
+	end
+
+	for-2 move-down end
+
+	for-351
+		move-left
+		move-down
+		move-left
+		move-up
+	end
+
+	for-2 move-down end
+end

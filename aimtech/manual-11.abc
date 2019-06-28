@@ -1,0 +1,40 @@
+for-133 move-down end
+
+for-366	
+	move-right
+
+	if-ok
+		for-250
+			for-13
+				take
+				open-up
+				move-up
+			end
+			move-right
+
+			for-13
+				take
+				open-down
+				move-down
+			end
+			move-right
+		end
+
+		for-249
+			move-left
+			for-13 move-up end
+			move-left
+			for-13 move-down end
+		end
+
+		move-left
+	else
+	endif
+
+	move-down
+end
+
+for-499
+	open-right
+	move-right
+end
