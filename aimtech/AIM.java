@@ -346,7 +346,7 @@ public class AIM {
 				return;
 			}
 			if (leaders.containsKey(testNum)) {
-				log.append("Leader=").append(leaders.get(testNum)).append("\t");
+				log.append("TOP=").append(leaders.get(testNum)).append("\t");
 			}
 			Runtime rt = Runtime.getRuntime();
 			Process pr = rt.exec("python evaluate.py" +
