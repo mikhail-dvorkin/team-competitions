@@ -301,11 +301,15 @@ public class AIM {
 
 	public static void main(String[] args) throws IOException {
 		boolean isSubmission = "true".equals(System.getenv("ONLINE_JUDGE"));
+		File folder = new File(aimtech.AIM.class.getPackage().getName().replace(".", "/"));
+		File resources = new File(folder, "res");
+		File output = new File(folder, "out");
 		PrintWriter html = null;
 		Map<Integer, Double> leaders = new HashMap<>();
 		if (!isSubmission) {
-			html = new PrintWriter("pics~.html");
-			File leadersFile = new File("leaders.csv");
+			output.mkdirs();
+			html = new PrintWriter(new File(output, "pics.html"));
+			File leadersFile = new File(folder, "leaders.csv");
 			if (leadersFile.exists()) {
 				String[] leadersStrings = new Scanner(leadersFile).nextLine().split(",");
 				for (int i = 0; i < leadersStrings.length; i++) {
@@ -317,22 +321,22 @@ public class AIM {
 		int testCount = 14;
 		for (int testNum = testFrom; testNum < testFrom + testCount; testNum++) {
 			log = new StringBuilder(testNum + ") ");
-			String inputFileName = "input-" + testNum + ".in";
+			String inputFileName = "input-" + testNum + ".txt";
 			String outputFileName = testNum + ".out";
-			String imageFileName = testNum + "~.png";
+			String imageFileName = testNum + ".png";
 			String manualFileName = "manual-" + testNum + ".abc";
 			BufferedReader br;
 			if (isSubmission) {
 				br = new BufferedReader(new InputStreamReader(System.in));
 				out = new PrintWriter(System.out);
 			} else {
-				br = new BufferedReader(new FileReader(inputFileName));
-				out = new PrintWriter(outputFileName);
+				br = new BufferedReader(new FileReader(new File(resources, inputFileName)));
+				out = new PrintWriter(new File(output, outputFileName));
 			}
 			in = new MyScanner(br);
-			if (!isSubmission && new File(manualFileName).exists()) {
+			if (!isSubmission && new File(folder, manualFileName).exists()) {
 				out.close();
-				Files.copy(new File(manualFileName).toPath(), new File(outputFileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(new File(folder, manualFileName).toPath(), new File(outputFileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} else {
 				new AIM().run();
 			}
@@ -345,8 +349,11 @@ public class AIM {
 				log.append("Leader=").append(leaders.get(testNum)).append("\t");
 			}
 			Runtime rt = Runtime.getRuntime();
-			Process pr = rt.exec("python aimmaze.py --image "
-					+ imageFileName + " " + inputFileName + " " + outputFileName);
+			Process pr = rt.exec("python evaluate.py" +
+					" --image " + output.getName() + "/" + imageFileName +
+					" " + resources.getName() + "/" + inputFileName +
+					" " + output.getName() + "/" + outputFileName,
+					null, folder);
 			log.append(new Scanner(pr.getErrorStream()).nextLine());
 			System.out.println(log);
 			html.println(log + "<br><img src='" + imageFileName + "'><br>");
