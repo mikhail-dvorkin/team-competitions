@@ -304,11 +304,12 @@ public class AIM {
 		File folder = new File(aimtech.AIM.class.getPackage().getName().replace(".", "/"));
 		File resources = new File(folder, "res");
 		File output = new File(folder, "out");
+		File picsFile = new File(output, "pics.html");
 		PrintWriter html = null;
 		Map<Integer, Double> leaders = new HashMap<>();
 		if (!isSubmission) {
 			output.mkdirs();
-			html = new PrintWriter(new File(output, "pics.html"));
+			html = new PrintWriter(picsFile);
 			File leadersFile = new File(folder, "leaders.csv");
 			if (leadersFile.exists()) {
 				String[] leadersStrings = new Scanner(leadersFile).nextLine().split(",");
@@ -362,6 +363,7 @@ public class AIM {
 			html.println(log + "<br><img src='" + imageFile.getName() + "'><br>");
 			html.flush();
 		}
+		Files.copy(picsFile.toPath(), new File(output, "log" + System.currentTimeMillis() + ".txt").toPath());
 	}
 
 	static class MyScanner {
