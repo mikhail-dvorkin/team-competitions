@@ -1,6 +1,6 @@
 for-133 move-down end
 
-for-366	
+for-366
 	move-right
 
 	if-ok
