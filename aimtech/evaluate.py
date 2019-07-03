@@ -26,10 +26,11 @@ def main():
 	aimmaze.CELL_SIZE = 4
 	aimmaze.WALL_WIDTH = 1
 	aimmaze.SOLUTION_WIDTH = 1
-	aimmaze.ROBOT_COLOR = "blue"
-	aimmaze.WALL_COLOR = "gray"
+	aimmaze.ROBOT_COLOR = "gray"
+	aimmaze.WALL_COLOR = "lightgray"
 	aimmaze.GRID_COLOR = "white"
-	aimmaze.KEY_COLOR = "red"
+	aimmaze.EXIT_COLOR = "red"
+	aimmaze.KEY_COLOR = "blue"
 	aimmaze.quit_ok = my_quit_ok
 	math.log2 = my_log
 	aimmaze.main()
