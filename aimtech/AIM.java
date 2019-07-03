@@ -321,22 +321,22 @@ public class AIM {
 		int testCount = 14;
 		for (int testNum = testFrom; testNum < testFrom + testCount; testNum++) {
 			log = new StringBuilder(testNum + ") ");
-			String inputFileName = "input-" + testNum + ".txt";
-			String outputFileName = testNum + ".out";
-			String imageFileName = testNum + ".png";
-			String manualFileName = "manual-" + testNum + ".abc";
+			File inputFile = new File(resources, "input-" + testNum + ".txt");
+			File outputFile = new File(output, testNum + ".out");
+			File imageFile = new File(output, testNum + ".png");
+			File manualFile = new File(folder, "manual-" + testNum + ".abc");
 			BufferedReader br;
 			if (isSubmission) {
 				br = new BufferedReader(new InputStreamReader(System.in));
 				out = new PrintWriter(System.out);
 			} else {
-				br = new BufferedReader(new FileReader(new File(resources, inputFileName)));
-				out = new PrintWriter(new File(output, outputFileName));
+				br = new BufferedReader(new FileReader(inputFile));
+				out = new PrintWriter(outputFile);
 			}
 			in = new MyScanner(br);
-			if (!isSubmission && new File(folder, manualFileName).exists()) {
+			if (!isSubmission && manualFile.exists()) {
 				out.close();
-				Files.copy(new File(folder, manualFileName).toPath(), new File(outputFileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(manualFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} else {
 				new AIM().run();
 			}
@@ -350,13 +350,16 @@ public class AIM {
 			}
 			Runtime rt = Runtime.getRuntime();
 			Process pr = rt.exec("python3 evaluate.py" +
-					" --image " + output.getName() + "/" + imageFileName +
-					" " + resources.getName() + "/" + inputFileName +
-					" " + output.getName() + "/" + outputFileName,
+					" --image " + imageFile.getCanonicalPath() +
+					" " + inputFile.getCanonicalPath() +
+					" " + outputFile.getCanonicalPath(),
 					null, folder);
-			log.append(new Scanner(pr.getErrorStream()).nextLine());
+			Scanner errorStream = new Scanner(pr.getErrorStream());
+			while (errorStream.hasNextLine()) {
+				log.append(errorStream.nextLine());
+			}
 			System.out.println(log);
-			html.println(log + "<br><img src='" + imageFileName + "'><br>");
+			html.println(log + "<br><img src='" + imageFile.getName() + "'><br>");
 			html.flush();
 		}
 	}
