@@ -349,7 +349,7 @@ public class AIM {
 				log.append("TOP=").append(leaders.get(testNum)).append("\t");
 			}
 			Runtime rt = Runtime.getRuntime();
-			Process pr = rt.exec("python evaluate.py" +
+			Process pr = rt.exec("python3 evaluate.py" +
 					" --image " + output.getName() + "/" + imageFileName +
 					" " + resources.getName() + "/" + inputFileName +
 					" " + output.getName() + "/" + outputFileName,
