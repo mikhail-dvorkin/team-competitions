@@ -58,7 +58,7 @@ class Sat {
 	boolean[] solveSat4j() {
 		try {
 			System.out.print("Hi");
-			PseudoOptDecorator solver = new PseudoOptDecorator(SolverFactory.newBothStar());
+			PseudoOptDecorator solver = new PseudoOptDecorator(SolverFactory.newBoth/*Star*/());
 			for (Clause clause : clauses) {
 				IVecInt literals = new VecInt(clause.vars);
 				solver.addAtLeast(literals, clause.min);
@@ -66,7 +66,7 @@ class Sat {
 			}
 			System.out.print(".");
 			IVecInt vars = new VecInt(scores.length);
-			IVec<BigInteger> coeffs = new Vec<>(scores.length);
+			IVec/*<BigInteger>*/ coeffs = new Vec(scores.length);
 			for (int i = 0; i < scores.length; i++) {
 				vars.push(i + 1);
 				coeffs.push(BigInteger.valueOf(-scores[i]));
